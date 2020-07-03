@@ -5,6 +5,7 @@ using System.Text.Json;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
+using System.Linq;
 
 namespace prWebApiTask2.Controllers
 {
@@ -22,17 +23,26 @@ namespace prWebApiTask2.Controllers
         }
 
         [HttpGet]
-        public async Task<JsonResult> Get(string Id = "")
+        public async Task<JsonResult> GetUser()
         {
-            
-            //dbConn.Dispose(); dbConn = null;7
             var collection = database.GetCollection<User>("_id");
-            var documents = await (await collection.FindAsync
-                (null == Id || ("".Equals(Id)) ? new BsonDocument() : new BsonDocument("_id", Id))).ToListAsync();
+            var documents = await (await collection.FindAsync(new BsonDocument())).ToListAsync();
             if (documents.Count == 0)
-                throw new Exception(("".Equals(Id)) ? "Нет пользователей в БД." : "Пользователь с указанным ID не найден.");
+                throw new Exception("Нет пользователей в БД.");
 
             return Json(documents);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<JsonResult> GetUserById(string Id)
+        {
+            var collection = database.GetCollection<User>("_id");
+            if (string.IsNullOrEmpty(Id))
+                throw new Exception("Указан пустой Id");
+            var documents = await (await collection.FindAsync<User>(x => x._id == Id)).ToListAsync();
+            if (documents.Count == 0)
+                throw new Exception("Пользователь с указанным ID не найден.");
+            return Json(documents.First());
         }
 
         // POST api
