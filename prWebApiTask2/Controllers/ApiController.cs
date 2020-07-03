@@ -47,9 +47,8 @@ namespace prWebApiTask2.Controllers
 
         // POST api
         [HttpPost]
-        public async Task<ActionResult> Post([FromForm] string json)
+        public async Task<ActionResult> Post([FromBody] WebFormUser info)
         {
-            WebFormUser info = JsonSerializer.Deserialize<WebFormUser>(json);
             var collection = database.GetCollection<BsonDocument>("_id");
             if (collection.CountDocumentsAsync(new BsonDocument("_id", info.Id)).Result == 0)
             {
@@ -63,9 +62,8 @@ namespace prWebApiTask2.Controllers
 
         // PUT api
         [HttpPut]
-        public async Task<ActionResult> Put([FromForm] string json)
+        public async Task<ActionResult> Put([FromBody] WebFormUser info)
         {
-            WebFormUser info = JsonSerializer.Deserialize<WebFormUser>(json);
             var collection = database.GetCollection<BsonDocument>("_id");
             if (collection.CountDocumentsAsync(new BsonDocument("_id", info.Id)).Result != 0)
             {
